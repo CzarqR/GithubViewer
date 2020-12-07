@@ -76,4 +76,17 @@ dependencies {
 
     // Timber https://github.com/JakeWharton/timber
     implementation "com.jakewharton.timber:timber:$timber_version"
+
+    // retrofit/moshi https://github.com/square/retrofit
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    // OkHttp https://github.com/square/okhttp
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
+    // activity ktx https://developer.android.com/jetpack/androidx/releases/activity
+    implementation "androidx.activity:activity-ktx:$activity_ktx_version"
 }

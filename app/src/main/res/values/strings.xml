@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GithubViewer</string>
+    <string name="try_again">Try again</string>
 </resources>

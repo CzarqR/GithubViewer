@@ -3,20 +3,23 @@ package com.myniprojects.githubviewer.vm
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myniprojects.githubviewer.network.GithubService
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.myniprojects.githubviewer.model.GithubRepo
+import com.myniprojects.githubviewer.repository.GithubRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+
+//import com.myniprojects.githubviewer.repository.GithubRepository
 
 class MainViewModel @ViewModelInject constructor(
-    private val githubService: GithubService
+    private val githubRepository: GithubRepository
 ) : ViewModel()
 {
-    fun test()
+    @ExperimentalCoroutinesApi
+    fun searchRepo(query: String): Flow<PagingData<GithubRepo>>
     {
-        viewModelScope.launch(IO) {
-            val x = githubService.searchRepos("Android", 1, 10)
-            Timber.d(x.toString())
-        }
+        return githubRepository.getSearchStream(query)
+            .cachedIn(viewModelScope)
     }
 }

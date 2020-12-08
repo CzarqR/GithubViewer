@@ -89,4 +89,7 @@ dependencies {
 
     // activity ktx https://developer.android.com/jetpack/androidx/releases/activity
     implementation "androidx.activity:activity-ktx:$activity_ktx_version"
+
+    // paging https://developer.android.com/jetpack/androidx/releases/paging#paging_compose_version_100_2
+    implementation "androidx.paging:paging-compose:1.0.0-alpha02"
 }

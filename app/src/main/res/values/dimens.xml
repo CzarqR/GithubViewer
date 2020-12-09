@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_small_padding">8dp</dimen>
+    <dimen name="card_elevation">8dp</dimen>
+    <dimen name="default_tiny_padding">4dp</dimen>
+</resources>

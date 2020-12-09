@@ -50,8 +50,7 @@ class MainViewModel @ViewModelInject constructor(
                     if (checkInsert(before.githubRepo, after.githubRepo))
                     {
                         RepoListModel.RepoSeparatorItem(
-                            after.githubRepo.stars,
-                            before.githubRepo.stars
+                            after.githubRepo.stars
                         )
                     }
                     else
@@ -69,7 +68,6 @@ private fun checkInsert(before: GithubRepo, after: GithubRepo): Boolean
     var i = 100_000
     while (i > 1)
     {
-        Timber.d("i = $i | ${before.stars} | ${after.stars}")
         if (after.stars > i)
         {
             return before.stars / i != after.stars / i

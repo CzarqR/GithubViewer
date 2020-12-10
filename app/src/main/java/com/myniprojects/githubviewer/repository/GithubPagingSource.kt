@@ -13,7 +13,6 @@ class GithubPaging @Inject constructor(
     private val githubService: GithubService,
 )
 {
-
     fun getGithubPagingSource(query: String): PagingSource<Int, ResponseItem>
     {
         return object : PagingSource<Int, ResponseItem>()

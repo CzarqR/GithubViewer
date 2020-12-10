@@ -3,6 +3,7 @@ package com.myniprojects.githubviewer.ui.main
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.platform.setContent
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity()
 
     private val viewModel: MainViewModel by viewModels()
 
+    @ExperimentalMaterialApi
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity()
             GithubViewerTheme {
                 Surface(color = MaterialTheme.colors.background) {
 
-                    SearchScreen(repos = viewModel.searchRepo("Android"))
+                    SearchScreen(viewModel = viewModel)
 
                 }
             }

@@ -13,18 +13,33 @@ import com.myniprojects.githubviewer.repository.GithubRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
-//import com.myniprojects.githubviewer.repository.GithubRepository
 
 class MainViewModel @ViewModelInject constructor(
     private val githubRepository: GithubRepository
 ) : ViewModel()
 {
+    private var currentQuery: String? = null
+
+    private var currentResult: Flow<PagingData<RepoListModel>>? = null
+
+
     @ExperimentalCoroutinesApi
-    fun searchRepo(query: String): Flow<PagingData<RepoListModel>>
+    fun searchRepo(query: String): Flow<PagingData<RepoListModel>>?
     {
-        return githubRepository.getSearchStream(query)
+        if (query.isBlank())
+        {
+            return null
+        }
+
+        if (currentQuery == query)
+        {
+            return currentResult
+        }
+
+        currentQuery = query
+
+        currentResult = githubRepository.getSearchStream(query)
             .map { pagingData ->
                 pagingData.map { githubRepo ->
                     RepoListModel.RepoItem(githubRepo)
@@ -60,6 +75,8 @@ class MainViewModel @ViewModelInject constructor(
                 }
             }
             .cachedIn(viewModelScope)
+
+        return currentResult
     }
 }
 
@@ -73,6 +90,12 @@ private fun checkInsert(before: GithubRepo, after: GithubRepo): Boolean
             return before.stars / i != after.stars / i
         }
         i /= 10
+    }
+
+    // last separator "10< ★"
+    if (before.stars >= 10 && after.stars < 10)
+    {
+        return true
     }
 
     return false

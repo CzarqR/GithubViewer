@@ -3,4 +3,9 @@
     <string name="try_again">Try again</string>
     <string name="div_format">%s+</string>
     <string name="search_label">GitHub Repository</string>
+    <string name="search_info">To find GitHub repository submit query</string>
+    <string name="empty_query">Query cannot be blank. It has to contain at least one non whitespace character</string>
+    <string name="ok">OK</string>
+    <string name="below_ten"><![CDATA[10<]]></string>
+    <string name="empty_result">Nothing was found, try another query</string>
 </resources>

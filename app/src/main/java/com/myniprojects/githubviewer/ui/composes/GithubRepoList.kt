@@ -1,5 +1,8 @@
 package com.myniprojects.githubviewer.ui.composes
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -7,8 +10,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -36,6 +41,9 @@ fun RepoList(
 {
     val lazyRepoItems: LazyPagingItems<RepoListModel> = repos.collectAsLazyPagingItems()
 
+    val context = ContextAmbient.current
+
+
     LazyColumn {
         items(lazyRepoItems) { repoListModel: RepoListModel? ->
             repoListModel?.let {
@@ -47,6 +55,15 @@ fun RepoList(
                             repo = it.githubRepo,
                             onCLick = { url ->
                                 Timber.d("Repo clicked with URL $url")
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                try
+                                {
+                                    context.startActivity(intent)
+                                }
+                                catch (e: ActivityNotFoundException)
+                                {
+                                    Timber.d("Cannot open web")
+                                }
                             }
                         )
                     }
@@ -59,6 +76,8 @@ fun RepoList(
         }
 
         lazyRepoItems.apply {
+            Timber.d(loadState.toString())
+
             when
             {
                 loadState.refresh is LoadState.Loading ->
@@ -87,6 +106,14 @@ fun RepoList(
                         ErrorItem(
                             message = e.error.localizedMessage!!,
                             onClickRetry = { retry() }
+                        )
+                    }
+                }
+                loadState.prepend is LoadState.NotLoading && loadState.prepend.endOfPaginationReached && itemCount == 0 ->
+                {
+                    item {
+                        EmptyItem(
+                            message = stringResource(id = R.string.empty_result),
                         )
                     }
                 }
@@ -172,8 +199,6 @@ fun GithubRepoItem(
                                 start = dimensionResource(id = R.dimen.default_tiny_padding),
                             )
                     )
-
-
                 }
             }
         }
@@ -200,7 +225,6 @@ fun GithubRepoItemPrev()
 
             }
         )
-
     }
 }
 
@@ -224,11 +248,16 @@ fun SeparatorGithubItem(
         SepDivider()
 
         Providers(AmbientContentAlpha provides ContentAlpha.high) {
+            val s = remember { separator.after.getRounded() }
             Text(
-                text = stringResource(
-                    id = R.string.div_format,
-                    separator.after.getRounded().formatWithSpaces()
-                ),
+                text =
+                if (s == 0)
+                    stringResource(id = R.string.below_ten)
+                else
+                    stringResource(
+                        id = R.string.div_format,
+                        s.formatWithSpaces()
+                    ),
                 style = MaterialTheme.typography.overline.copy(
                     fontSize = 16.sp
                 )
@@ -241,8 +270,6 @@ fun SeparatorGithubItem(
                     .height(16.dp)
             )
         }
-
-
 
         SepDivider()
     }
@@ -268,7 +295,10 @@ fun RowScope.SepDivider()
 fun SeparatorGithubItemPrev()
 {
     ThemedPreview {
-        SeparatorGithubItem(separator = RepoListModel.RepoSeparatorItem(19_319))
+        Column {
+            SeparatorGithubItem(separator = RepoListModel.RepoSeparatorItem(19_319))
+            SeparatorGithubItem(separator = RepoListModel.RepoSeparatorItem(9))
+        }
     }
 }
 
@@ -283,7 +313,7 @@ private fun Int.getRounded(): Int
         }
         i /= 10
     }
-    throw IllegalArgumentException("Wrong value $this. Separator should be bigger or equal 10")
+    return 0
 }
 
 fun Int.formatWithSpaces(): String

@@ -10,10 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import com.myniprojects.githubviewer.ui.theme.ThemedPreview
 import com.myniprojects.githubviewer.R
+import com.myniprojects.githubviewer.ui.theme.ThemedPreview
 
 @Composable
 fun LoadingView(
@@ -99,6 +100,43 @@ fun ErrorItemPrev()
             ErrorItem(
                 message = "The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here',",
                 onClickRetry = {}
+            )
+        }
+    }
+}
+
+
+@Composable
+fun EmptyItem(
+    message: String,
+    modifier: Modifier = Modifier,
+)
+{
+
+
+    Row(
+        modifier = modifier.padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = message,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EmptyItemPrev()
+{
+    ThemedPreview {
+        Column {
+            EmptyItem(
+                message = stringResource(id = R.string.empty_result),
             )
         }
     }

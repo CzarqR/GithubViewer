@@ -26,92 +26,84 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
-@ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
+@ExperimentalMaterialApi
 @Composable
 fun SearchScreen(
     viewModel: MainViewModel,
-    modifier: Modifier = Modifier
+    snackbarHostState: SnackbarHostState
 )
 {
     val (query, setQuery) = remember { mutableStateOf("") }
     val (repos, setRepos) = remember { mutableStateOf(viewModel.searchRepo(query = "")) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     val emptyQueryMessage = stringResource(id = R.string.empty_query)
     val ok = stringResource(id = R.string.ok)
 
-    Scaffold(
-        modifier = modifier,
-        scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState),
-    ) {
-        Column {
+    Column {
+        Surface(
+            elevation = 4.dp,
+            color = MaterialTheme.colors.surface
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = setQuery,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.default_small_padding)),
+                label = {
+                    Text(text = stringResource(id = R.string.search_label))
+                },
+                maxLines = 1,
+                isErrorValue = query.isBlank(),
+                textStyle = AmbientTextStyle.current.copy(color = MaterialTheme.colors.onSurface),
+                activeColor = if (isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                onImeActionPerformed = { imeAction: ImeAction, softwareKeyboardController: SoftwareKeyboardController? ->
+                    if (imeAction == ImeAction.Search)
+                    {
+                        setQuery(query.trim())
+                        Timber.d("Search query: $query")
 
-            Surface(
-                elevation = 4.dp,
-                color = MaterialTheme.colors.surface
-            ) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = setQuery,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.default_small_padding)),
-                    label = {
-                        Text(text = stringResource(id = R.string.search_label))
-                    },
-                    maxLines = 1,
-                    isErrorValue = query.isBlank(),
-                    textStyle = AmbientTextStyle.current.copy(color = MaterialTheme.colors.onSurface),
-                    activeColor = if (isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                    onImeActionPerformed = { imeAction: ImeAction, softwareKeyboardController: SoftwareKeyboardController? ->
-                        if (imeAction == ImeAction.Search)
+                        if (query.isNotBlank())
                         {
-                            setQuery(query.trim())
-                            Timber.d("Search query: $query")
+                            setRepos(viewModel.searchRepo(query = query))
+                            softwareKeyboardController?.hideSoftwareKeyboard()
+                        }
+                        else
+                        {
+                            /*
+                            it would be better if soft keyboard didn't hide everytime
+                            user enter blank query. Snacbar should appear over keyboard
+                             */
+                            softwareKeyboardController?.hideSoftwareKeyboard()
 
-                            if (query.isNotBlank())
-                            {
-                                setRepos(viewModel.searchRepo(query = query))
-                                softwareKeyboardController?.hideSoftwareKeyboard()
-                            }
-                            else
-                            {
-                                /*
-                                it would be better if soft keyboard didn't hide everytime
-                                user enter blank query. Snacbar should appear over keyboard
-                                 */
-                                softwareKeyboardController?.hideSoftwareKeyboard()
-
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = emptyQueryMessage,
-                                        actionLabel = ok,
-                                        duration = SnackbarDuration.Long
-                                    )
-                                }
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = emptyQueryMessage,
+                                    actionLabel = ok,
+                                    duration = SnackbarDuration.Long
+                                )
                             }
                         }
-                    },
-                    trailingIcon = {
-                        Icon(asset = vectorResource(id = R.drawable.ic_git_repo))
                     }
-                )
-            }
-            if (repos == null)
-            {
-                EmptySearchScreen()
-            }
-            else
-            {
-                RepoList(
-                    repos = repos
-                )
-            }
-
+                },
+                trailingIcon = {
+                    Icon(asset = vectorResource(id = R.drawable.ic_git_repo))
+                }
+            )
+        }
+        if (repos == null)
+        {
+            EmptySearchScreen()
+        }
+        else
+        {
+            RepoList(
+                repos = repos
+            )
         }
     }
 }

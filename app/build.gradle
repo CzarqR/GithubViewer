@@ -92,4 +92,7 @@ dependencies {
 
     // paging https://developer.android.com/jetpack/androidx/releases/paging#paging_compose_version_100_2
     implementation "androidx.paging:paging-compose:1.0.0-alpha02"
+
+    // navigation https://developer.android.com/jetpack/compose/navigation
+    implementation "androidx.navigation:navigation-compose:$nav_compose_version"
 }

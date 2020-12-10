@@ -7,7 +7,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.platform.setContent
-import com.myniprojects.githubviewer.ui.composes.SearchScreen
+import com.myniprojects.githubviewer.ui.composes.MainHost
 import com.myniprojects.githubviewer.ui.theme.GithubViewerTheme
 import com.myniprojects.githubviewer.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity()
             GithubViewerTheme {
                 Surface(color = MaterialTheme.colors.background) {
 
-                    SearchScreen(viewModel = viewModel)
+                    MainHost(viewModel = viewModel)
 
                 }
             }

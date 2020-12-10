@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,7 +79,11 @@ fun ErrorItem(
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.error
         )
-        OutlinedButton(onClick = onClickRetry) {
+        OutlinedButton(
+            onClick = onClickRetry,
+            modifier = Modifier
+                .padding(start = dimensionResource(id = R.dimen.default_small_padding))
+        ) {
             Text(text = stringResource(id = R.string.try_again))
         }
     }

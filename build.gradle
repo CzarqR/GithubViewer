@@ -10,6 +10,7 @@ buildscript {
         moshi_version = "1.11.0"
         okhttp_version = "4.9.0"
         activity_ktx_version = "1.1.0"
+        nav_compose_version = "1.0.0-alpha02"
     }
     repositories {
         google()

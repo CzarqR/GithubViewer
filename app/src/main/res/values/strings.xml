@@ -8,4 +8,7 @@
     <string name="ok">OK</string>
     <string name="below_ten"><![CDATA[10<]]></string>
     <string name="empty_result">Nothing was found, try another query</string>
+    <string name="repos">Repos</string>
+    <string name="users">Users</string>
+    <string name="liked">Liked</string>
 </resources>

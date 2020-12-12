@@ -9,7 +9,6 @@ import com.myniprojects.githubviewer.utils.Constants.NETWORK_PAGE_SIZE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 import javax.inject.Inject
 
 class GithubRepository @Inject constructor(
@@ -18,20 +17,38 @@ class GithubRepository @Inject constructor(
 )
 {
     @ExperimentalCoroutinesApi
-    fun getSearchStream(query: String): Flow<PagingData<GithubRepo>>
+    fun getPublicReposSearchStream(query: String): Flow<PagingData<GithubRepo>>
     {
-        Timber.d("New query submitted $query")
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
                 enablePlaceholders = false,
                 initialLoadSize = NETWORK_PAGE_SIZE
             ),
-            pagingSourceFactory = { githubPaging.getGithubPagingSource(query) }
+            pagingSourceFactory = { githubPaging.getGithubPagingSourcePublicRepos(query) }
         ).flow.map { pagingData ->
             pagingData.map { responseItem ->
                 mapper.mapToNewModel(responseItem)
             }
         }
     }
+
+    @ExperimentalCoroutinesApi
+    fun getUserReposSearchStream(username: String): Flow<PagingData<GithubRepo>>
+    {
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false,
+                initialLoadSize = NETWORK_PAGE_SIZE
+            ),
+            pagingSourceFactory = { githubPaging.getGithubPagingSourceUserRepos(username) }
+        ).flow.map { pagingData ->
+            pagingData.map { responseItem ->
+                mapper.mapToNewModel(responseItem)
+            }
+        }
+    }
+
+
 }

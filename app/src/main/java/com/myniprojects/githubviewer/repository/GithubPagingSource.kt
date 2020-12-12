@@ -13,7 +13,7 @@ class GithubPaging @Inject constructor(
     private val githubService: GithubService,
 )
 {
-    fun getGithubPagingSource(query: String): PagingSource<Int, ResponseItem>
+    fun getGithubPagingSourcePublicRepos(query: String): PagingSource<Int, ResponseItem>
     {
         return object : PagingSource<Int, ResponseItem>()
         {
@@ -23,7 +23,11 @@ class GithubPaging @Inject constructor(
                 val position = params.key ?: GITHUB_STARTING_PAGE_INDEX
                 return try
                 {
-                    val response = githubService.searchRepos(apiQuery, position, params.loadSize)
+                    val response = githubService.searchPublicRepos(
+                        apiQuery,
+                        position,
+                        params.loadSize
+                    )
                     val repos = response.items
 
                     LoadResult.Page(
@@ -43,4 +47,40 @@ class GithubPaging @Inject constructor(
             }
         }
     }
+
+    fun getGithubPagingSourceUserRepos(username: String): PagingSource<Int, ResponseItem>
+    {
+        return object : PagingSource<Int, ResponseItem>()
+        {
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ResponseItem>
+            {
+                val position = params.key ?: GITHUB_STARTING_PAGE_INDEX
+
+                return try
+                {
+                    val response = githubService.searchUserRepos(
+                        username,
+                        position,
+                        params.loadSize
+                    )
+                    val repos = response.items
+
+                    LoadResult.Page(
+                        data = repos,
+                        prevKey = if (position == GITHUB_STARTING_PAGE_INDEX) null else position - 1,
+                        nextKey = if (repos.isEmpty()) null else position + 1
+                    )
+                }
+                catch (exception: IOException)
+                {
+                    LoadResult.Error(exception)
+                }
+                catch (exception: HttpException)
+                {
+                    LoadResult.Error(exception)
+                }
+            }
+        }
+    }
+
 }

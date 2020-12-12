@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
@@ -36,15 +38,20 @@ import timber.log.Timber
 
 @Composable
 fun RepoList(
-    repos: Flow<PagingData<RepoListModel>>
+    repos: Flow<PagingData<RepoListModel>>,
+    state: LazyListState = rememberLazyListState()
 )
 {
+    Timber.d("STATE. HASH ${state.hashCode()}  RepoList ${state.firstVisibleItemIndex} ${state.firstVisibleItemScrollOffset}")
+
     val lazyRepoItems: LazyPagingItems<RepoListModel> = repos.collectAsLazyPagingItems()
 
     val context = ContextAmbient.current
 
 
-    LazyColumn {
+    LazyColumn(
+        state = state
+    ) {
         items(lazyRepoItems) { repoListModel: RepoListModel? ->
             repoListModel?.let {
                 when (it)
@@ -76,8 +83,6 @@ fun RepoList(
         }
 
         lazyRepoItems.apply {
-            Timber.d(loadState.toString())
-
             when
             {
                 loadState.refresh is LoadState.Loading ->

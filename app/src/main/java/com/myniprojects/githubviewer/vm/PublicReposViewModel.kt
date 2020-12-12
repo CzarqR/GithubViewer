@@ -15,17 +15,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 
-class MainViewModel @ViewModelInject constructor(
+class PublicReposViewModel @ViewModelInject constructor(
     private val githubRepository: GithubRepository
 ) : ViewModel()
 {
-    private var currentQuery: String? = null
+    var currentQuery: String? = null
+        private set
 
-    private var currentResult: Flow<PagingData<RepoListModel>>? = null
-
+    var currentResult: Flow<PagingData<RepoListModel>>? = null
+        private set
 
     @ExperimentalCoroutinesApi
-    fun searchRepo(query: String): Flow<PagingData<RepoListModel>>?
+    fun searchPublicRepo(query: String): Flow<PagingData<RepoListModel>>?
     {
         if (query.isBlank())
         {
@@ -39,7 +40,7 @@ class MainViewModel @ViewModelInject constructor(
 
         currentQuery = query
 
-        currentResult = githubRepository.getSearchStream(query)
+        currentResult = githubRepository.getPublicReposSearchStream(query)
             .map { pagingData ->
                 pagingData.map { githubRepo ->
                     RepoListModel.RepoItem(githubRepo)

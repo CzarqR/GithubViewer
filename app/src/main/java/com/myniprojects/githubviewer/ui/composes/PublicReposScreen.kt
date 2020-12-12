@@ -2,6 +2,8 @@ package com.myniprojects.githubviewer.ui.composes
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -20,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import com.myniprojects.githubviewer.R
 import com.myniprojects.githubviewer.ui.theme.ThemedPreview
-import com.myniprojects.githubviewer.vm.MainViewModel
+import com.myniprojects.githubviewer.vm.PublicReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,13 +31,18 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
-fun SearchScreen(
-    viewModel: MainViewModel,
-    snackbarHostState: SnackbarHostState
+fun PublicReposScreen(
+    viewModel: PublicReposViewModel,
+    snackbarHostState: SnackbarHostState,
+    state: LazyListState = rememberLazyListState()
 )
 {
-    val (query, setQuery) = remember { mutableStateOf("") }
-    val (repos, setRepos) = remember { mutableStateOf(viewModel.searchRepo(query = "")) }
+    val (query, setQuery) = remember { mutableStateOf(viewModel.currentQuery ?: "") }
+    val (repos, setRepos) = remember {
+        mutableStateOf(
+            viewModel.currentResult ?: viewModel.searchPublicRepo(query = "")
+        )
+    }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -69,7 +76,7 @@ fun SearchScreen(
 
                         if (query.isNotBlank())
                         {
-                            setRepos(viewModel.searchRepo(query = query))
+                            setRepos(viewModel.searchPublicRepo(query = query))
                             softwareKeyboardController?.hideSoftwareKeyboard()
                         }
                         else
@@ -102,7 +109,9 @@ fun SearchScreen(
         else
         {
             RepoList(
-                repos = repos
+                repos = repos,
+                state = state
+
             )
         }
     }

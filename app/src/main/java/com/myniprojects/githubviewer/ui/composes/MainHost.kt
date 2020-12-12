@@ -2,6 +2,8 @@ package com.myniprojects.githubviewer.ui.composes
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,14 +14,19 @@ import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.myniprojects.githubviewer.R
-import com.myniprojects.githubviewer.vm.MainViewModel
+import com.myniprojects.githubviewer.vm.LikedReposViewModel
+import com.myniprojects.githubviewer.vm.PublicReposViewModel
+import com.myniprojects.githubviewer.vm.UserReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import timber.log.Timber
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @Composable
 fun MainHost(
-    viewModel: MainViewModel,
+    publicReposViewModel: PublicReposViewModel,
+    userReposViewModel: UserReposViewModel,
+    likedReposViewModel: LikedReposViewModel,
     modifier: Modifier = Modifier
 )
 {
@@ -61,7 +68,9 @@ fun MainHost(
     ) {
         MainBody(
             navController = navController,
-            viewModel = viewModel,
+            publicReposViewModel = publicReposViewModel,
+            userReposViewModel = userReposViewModel,
+            likedReposViewModel = likedReposViewModel,
             snackbarHostState = snackbarHostState
         )
     }
@@ -72,31 +81,44 @@ fun MainHost(
 @Composable
 fun MainBody(
     navController: NavHostController,
-    viewModel: MainViewModel,
-    snackbarHostState: SnackbarHostState
+    publicReposViewModel: PublicReposViewModel,
+    userReposViewModel: UserReposViewModel,
+    likedReposViewModel: LikedReposViewModel,
+    snackbarHostState: SnackbarHostState,
+    publicReposState: LazyListState = rememberLazyListState()
 )
 {
+    Timber.d("STATE. HASH ${publicReposState.hashCode()} MainBody ${publicReposState.firstVisibleItemIndex} ${publicReposState.firstVisibleItemScrollOffset}")
+
+
     NavHost(
         navController,
         startDestination = BottomNavigationScreens.Repos.route
     ) {
         composable(route = BottomNavigationScreens.Repos.route) {
-            SearchScreen(
-                viewModel = viewModel,
-                snackbarHostState = snackbarHostState
+            PublicReposScreen(
+                viewModel = publicReposViewModel,
+                snackbarHostState = snackbarHostState,
+                state = publicReposState //state doesn't work, it isn't saved after changing screen at BottomNav
             )
         }
 
         composable(
             route = BottomNavigationScreens.Users.route
         ) {
-            Text(text = "Second screen users")
+            UserReposScreen(
+                viewModel = userReposViewModel,
+                snackbarHostState = snackbarHostState
+            )
         }
 
         composable(
             route = BottomNavigationScreens.Liked.route
         ) {
-            Text(text = "Third screen liked")
+            LikedReposScreen(
+                viewModel = likedReposViewModel,
+                snackbarHostState = snackbarHostState
+            )
         }
     }
 }

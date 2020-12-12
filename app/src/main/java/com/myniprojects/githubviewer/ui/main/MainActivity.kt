@@ -9,15 +9,18 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.platform.setContent
 import com.myniprojects.githubviewer.ui.composes.MainHost
 import com.myniprojects.githubviewer.ui.theme.GithubViewerTheme
-import com.myniprojects.githubviewer.vm.MainViewModel
+import com.myniprojects.githubviewer.vm.LikedReposViewModel
+import com.myniprojects.githubviewer.vm.PublicReposViewModel
+import com.myniprojects.githubviewer.vm.UserReposViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
-
-    private val viewModel: MainViewModel by viewModels()
+    private val userReposViewModel: UserReposViewModel by viewModels()
+    private val publicReposViewModel: PublicReposViewModel by viewModels()
+    private val likedReposViewModel: LikedReposViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalCoroutinesApi
@@ -25,16 +28,15 @@ class MainActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
 
-        // change light mode to test
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        //delegate.applyDayNight()
-
         setContent {
             GithubViewerTheme {
                 Surface(color = MaterialTheme.colors.background) {
 
-                    MainHost(viewModel = viewModel)
-
+                    MainHost(
+                        userReposViewModel = userReposViewModel,
+                        publicReposViewModel = publicReposViewModel,
+                        likedReposViewModel = likedReposViewModel
+                    )
                 }
             }
         }

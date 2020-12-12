@@ -2,13 +2,16 @@
     <string name="app_name">GithubViewer</string>
     <string name="try_again">Try again</string>
     <string name="div_format">%s+</string>
-    <string name="search_label">GitHub Repository</string>
-    <string name="search_info">To find GitHub repository submit query</string>
+    <string name="search_repo_label">GitHub Repository</string>
+    <string name="search_info_repos">To find GitHub repositories submit query</string>
+    <string name="search_info_user">To find GitHub user submit username</string>
     <string name="empty_query">Query cannot be blank. It has to contain at least one non whitespace character</string>
     <string name="ok">OK</string>
     <string name="below_ten"><![CDATA[10<]]></string>
-    <string name="empty_result">Nothing was found, try another query</string>
+    <string name="empty_result_repos">Nothing was found, try another query</string>
     <string name="repos">Repos</string>
     <string name="users">Users</string>
     <string name="liked">Liked</string>
+    <string name="search_user_label">GitHub username</string>
+    <string name="user_np_repos">User doesn\'t have any public repository</string>
 </resources>

@@ -141,7 +141,7 @@ fun EmptyItemPrev()
     ThemedPreview {
         Column {
             EmptyItem(
-                message = stringResource(id = R.string.empty_result),
+                message = stringResource(id = R.string.empty_result_repos),
             )
         }
     }

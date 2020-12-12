@@ -1,9 +1,8 @@
-package com.myniprojects.githubviewer.ui.composes
+package com.myniprojects.githubviewer.ui.main
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,14 +10,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.myniprojects.githubviewer.R
+import com.myniprojects.githubviewer.ui.screens.LikedReposScreen
+import com.myniprojects.githubviewer.ui.screens.PublicReposScreen
+import com.myniprojects.githubviewer.ui.screens.UserReposScreen
 import com.myniprojects.githubviewer.vm.LikedReposViewModel
 import com.myniprojects.githubviewer.vm.PublicReposViewModel
 import com.myniprojects.githubviewer.vm.UserReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import timber.log.Timber
 
 @ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
@@ -60,7 +62,8 @@ fun MainHost(
                             {
                                 navController.navigate(screen.route)
                             }
-                        }
+                        },
+                        alwaysShowLabels = false
                     )
                 }
             }
@@ -71,7 +74,9 @@ fun MainHost(
             publicReposViewModel = publicReposViewModel,
             userReposViewModel = userReposViewModel,
             likedReposViewModel = likedReposViewModel,
-            snackbarHostState = snackbarHostState
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier
+                .padding(bottom = 56.dp) // height of bottom navigation , value is private
         )
     }
 }
@@ -85,12 +90,9 @@ fun MainBody(
     userReposViewModel: UserReposViewModel,
     likedReposViewModel: LikedReposViewModel,
     snackbarHostState: SnackbarHostState,
-    publicReposState: LazyListState = rememberLazyListState()
+    modifier: Modifier = Modifier
 )
 {
-    Timber.d("STATE. HASH ${publicReposState.hashCode()} MainBody ${publicReposState.firstVisibleItemIndex} ${publicReposState.firstVisibleItemScrollOffset}")
-
-
     NavHost(
         navController,
         startDestination = BottomNavigationScreens.Repos.route
@@ -99,7 +101,7 @@ fun MainBody(
             PublicReposScreen(
                 viewModel = publicReposViewModel,
                 snackbarHostState = snackbarHostState,
-                state = publicReposState //state doesn't work, it isn't saved after changing screen at BottomNav
+                modifier = modifier
             )
         }
 
@@ -108,7 +110,8 @@ fun MainBody(
         ) {
             UserReposScreen(
                 viewModel = userReposViewModel,
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                modifier = modifier
             )
         }
 
@@ -117,7 +120,8 @@ fun MainBody(
         ) {
             LikedReposScreen(
                 viewModel = likedReposViewModel,
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                modifier = modifier
             )
         }
     }

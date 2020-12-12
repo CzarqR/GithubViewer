@@ -63,12 +63,11 @@ class GithubPaging @Inject constructor(
                         position,
                         params.loadSize
                     )
-                    val repos = response.items
 
                     LoadResult.Page(
-                        data = repos,
+                        data = response,
                         prevKey = if (position == GITHUB_STARTING_PAGE_INDEX) null else position - 1,
-                        nextKey = if (repos.isEmpty()) null else position + 1
+                        nextKey = if (response.isEmpty()) null else position + 1
                     )
                 }
                 catch (exception: IOException)

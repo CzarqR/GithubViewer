@@ -1,9 +1,7 @@
-package com.myniprojects.githubviewer.ui.composes
+package com.myniprojects.githubviewer.ui.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -21,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import com.myniprojects.githubviewer.R
+import com.myniprojects.githubviewer.ui.composes.RepoListSeparated
 import com.myniprojects.githubviewer.ui.theme.ThemedPreview
 import com.myniprojects.githubviewer.vm.PublicReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +33,7 @@ import timber.log.Timber
 fun PublicReposScreen(
     viewModel: PublicReposViewModel,
     snackbarHostState: SnackbarHostState,
-    state: LazyListState = rememberLazyListState()
+    modifier: Modifier = Modifier
 )
 {
     val (query, setQuery) = remember { mutableStateOf(viewModel.currentQuery ?: "") }
@@ -49,7 +48,9 @@ fun PublicReposScreen(
     val emptyQueryMessage = stringResource(id = R.string.empty_query)
     val ok = stringResource(id = R.string.ok)
 
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         Surface(
             elevation = 4.dp,
             color = MaterialTheme.colors.surface
@@ -61,7 +62,7 @@ fun PublicReposScreen(
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.default_small_padding)),
                 label = {
-                    Text(text = stringResource(id = R.string.search_label))
+                    Text(text = stringResource(id = R.string.search_repo_label))
                 },
                 maxLines = 1,
                 isErrorValue = query.isBlank(),
@@ -104,14 +105,12 @@ fun PublicReposScreen(
         }
         if (repos == null)
         {
-            EmptySearchScreen()
+            EmptySearchScreen(stringResource(id = R.string.search_info_repos))
         }
         else
         {
-            RepoList(
+            RepoListSeparated(
                 repos = repos,
-                state = state
-
             )
         }
     }
@@ -120,6 +119,7 @@ fun PublicReposScreen(
 
 @Composable
 fun EmptySearchScreen(
+    text: String,
     modifier: Modifier = Modifier
 )
 {
@@ -131,7 +131,7 @@ fun EmptySearchScreen(
             .padding(dimensionResource(id = R.dimen.default_small_padding))
     ) {
         Text(
-            text = stringResource(id = R.string.search_info),
+            text = text,
             style = MaterialTheme.typography.h5,
             textAlign = TextAlign.Center
         )
@@ -148,6 +148,6 @@ fun EmptySearchScreen(
 fun EmptySearchScreenPrev()
 {
     ThemedPreview {
-        EmptySearchScreen()
+        EmptySearchScreen(stringResource(id = R.string.search_info_repos))
     }
 }

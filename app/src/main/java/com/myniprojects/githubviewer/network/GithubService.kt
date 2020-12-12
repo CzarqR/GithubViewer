@@ -24,5 +24,5 @@ interface GithubService
         @Path("username") username: String,
         @Query("page") page: Int,
         @Query("per_page") itemsPerPage: Int
-    ): GithubResponse
+    ): List<ResponseItem>
 }

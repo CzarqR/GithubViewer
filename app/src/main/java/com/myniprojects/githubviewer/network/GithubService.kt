@@ -25,4 +25,12 @@ interface GithubService
         @Query("page") page: Int,
         @Query("per_page") itemsPerPage: Int
     ): List<ResponseItem>
+
+    /*
+    List repositories for a user: https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-repositories-for-a-user
+    */
+    @GET("users/{username}")
+    suspend fun searchUser(
+        @Path("username") username: String,
+    ): UserResponse
 }

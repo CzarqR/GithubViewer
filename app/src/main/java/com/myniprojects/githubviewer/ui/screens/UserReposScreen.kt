@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -18,6 +15,7 @@ import androidx.compose.ui.text.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.myniprojects.githubviewer.R
+import com.myniprojects.githubviewer.ui.composes.EmptyItem
 import com.myniprojects.githubviewer.ui.composes.RepoList
 import com.myniprojects.githubviewer.vm.UserReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,8 +35,21 @@ fun UserReposScreen(
     val (query, setQuery) = remember { mutableStateOf(viewModel.currentQuery ?: "") }
     val (repos, setRepos) = remember {
         mutableStateOf(
-            viewModel.currentResult ?: viewModel.searchUserRepo(query = "")
+            viewModel.currentRepoResult ?: viewModel.searchUserRepo(username = "")
         )
+    }
+
+    val (user, setUser) = remember {
+        mutableStateOf(
+            viewModel.currentUserResult ?: viewModel.searchUser("CzarqR")
+        )
+    }
+
+    val x = user?.collectAsState(initial = null)
+
+    if (x?.value != null)
+    {
+        Timber.d(x.value.toString())
     }
 
 
@@ -76,7 +87,7 @@ fun UserReposScreen(
 
                         if (query.isNotBlank())
                         {
-                            setRepos(viewModel.searchUserRepo(query = query))
+                            setRepos(viewModel.searchUserRepo(username = query))
                             softwareKeyboardController?.hideSoftwareKeyboard()
                         }
                         else
@@ -108,7 +119,12 @@ fun UserReposScreen(
         }
         else
         {
-            RepoList(repos = repos)
+            RepoList(
+                repos = repos,
+                error404 = {
+                    EmptyItem(message = stringResource(id = R.string.user_not_found))
+                }
+            )
         }
     }
 }

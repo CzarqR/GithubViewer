@@ -117,8 +117,6 @@ fun EmptyItem(
     modifier: Modifier = Modifier,
 )
 {
-
-
     Row(
         modifier = modifier.padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -130,8 +128,6 @@ fun EmptyItem(
             textAlign = TextAlign.Center,
         )
     }
-
-
 }
 
 @Preview(showBackground = true)
@@ -146,3 +142,34 @@ fun EmptyItemPrev()
         }
     }
 }
+
+
+//@Composable
+//fun UserNotFound(
+//    modifier: Modifier = Modifier,
+//
+//)
+//{
+//    Row(
+//        modifier = modifier.padding(16.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        Text(
+//            text = message,
+//            modifier = Modifier.weight(1f),
+//            style = MaterialTheme.typography.h6,
+//            textAlign = TextAlign.Center,
+//        )
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun UserNotFoundPrev()
+//{
+//    ThemedPreview {
+//        Column {
+//            UserNotFound()
+//        }
+//    }
+//}

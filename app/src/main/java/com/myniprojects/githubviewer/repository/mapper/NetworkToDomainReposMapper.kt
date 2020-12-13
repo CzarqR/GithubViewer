@@ -1,11 +1,11 @@
-package com.myniprojects.githubviewer.repository
+package com.myniprojects.githubviewer.repository.mapper
 
 import com.myniprojects.githubviewer.model.GithubRepo
 import com.myniprojects.githubviewer.network.ResponseItem
 import com.myniprojects.githubviewer.utils.ModelMapper
 import javax.inject.Inject
 
-class NetworkToDomainMapper @Inject constructor() : ModelMapper<ResponseItem, GithubRepo>
+class NetworkToDomainReposMapper @Inject constructor() : ModelMapper<ResponseItem, GithubRepo>
 {
     override fun mapToNewModel(entity: ResponseItem): GithubRepo
     {

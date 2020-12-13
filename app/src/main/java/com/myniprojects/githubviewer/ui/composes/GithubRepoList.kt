@@ -4,11 +4,13 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -23,13 +25,18 @@ import timber.log.Timber
 @Composable
 fun RepoList(
     repos: Flow<PagingData<GithubRepo>>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    error404: (@Composable () -> Unit)? = null
 )
 {
     val lazyRepoItems: LazyPagingItems<GithubRepo> = repos.collectAsLazyPagingItems()
     val context = ContextAmbient.current
 
     LazyColumn(
+        contentPadding = PaddingValues(
+            top = dimensionResource(id = R.dimen.default_tiny_padding),
+            bottom = dimensionResource(id = R.dimen.default_tiny_padding)
+        ),
         modifier = modifier
     ) {
         items(lazyRepoItems) { githubRepo ->
@@ -54,7 +61,8 @@ fun RepoList(
 
         applyLoadState(
             lazyRepoItems = lazyRepoItems,
-            R.string.user_np_repos
+            R.string.user_np_repos,
+            error404 = error404
 
         )
 
@@ -63,7 +71,8 @@ fun RepoList(
 
 fun <T> LazyListScope.applyLoadState(
     lazyRepoItems: LazyPagingItems<T>,
-    @StringRes emptyResult: Int
+    @StringRes emptyResult: Int,
+    error404: (@Composable () -> Unit)? = null
 ) where T : Any
 {
     lazyRepoItems.apply {
@@ -80,12 +89,22 @@ fun <T> LazyListScope.applyLoadState(
             loadState.refresh is LoadState.Error ->
             {
                 val e = lazyRepoItems.loadState.refresh as LoadState.Error
-                item {
-                    ErrorItem(
-                        message = e.error.localizedMessage!!,
-                        modifier = Modifier.fillParentMaxSize(),
-                        onClickRetry = { retry() }
-                    )
+
+                if (error404 != null && (e.error as retrofit2.HttpException).code() == 404)
+                {
+                    item {
+                        error404()
+                    }
+                }
+                else
+                {
+                    item {
+                        ErrorItem(
+                            message = e.error.localizedMessage!!,
+                            modifier = Modifier.fillParentMaxSize(),
+                            onClickRetry = { retry() }
+                        )
+                    }
                 }
             }
             loadState.append is LoadState.Error ->
@@ -109,3 +128,4 @@ fun <T> LazyListScope.applyLoadState(
         }
     }
 }
+

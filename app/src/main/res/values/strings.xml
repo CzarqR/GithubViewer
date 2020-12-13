@@ -14,4 +14,5 @@
     <string name="liked">Liked</string>
     <string name="search_user_label">GitHub username</string>
     <string name="user_np_repos">User doesn\'t have any public repository</string>
+    <string name="user_not_found">User with given name wasn\'t found. Try another name</string>
 </resources>

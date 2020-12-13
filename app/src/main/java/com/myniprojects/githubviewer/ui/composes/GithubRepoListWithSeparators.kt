@@ -36,12 +36,18 @@ import timber.log.Timber
 @Composable
 fun RepoListSeparated(
     repos: Flow<PagingData<RepoListModel>>,
+    modifier: Modifier = Modifier
 )
 {
     val lazyRepoItems: LazyPagingItems<RepoListModel> = repos.collectAsLazyPagingItems()
     val context = ContextAmbient.current
 
     LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            top = dimensionResource(id = R.dimen.default_tiny_padding),
+            bottom = dimensionResource(id = R.dimen.default_tiny_padding)
+        ),
     ) {
         items(lazyRepoItems) { repoListModel: RepoListModel? ->
             repoListModel?.let {

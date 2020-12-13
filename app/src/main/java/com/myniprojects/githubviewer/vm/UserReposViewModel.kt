@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.myniprojects.githubviewer.model.GithubRepo
+import com.myniprojects.githubviewer.model.GithubUser
+import com.myniprojects.githubviewer.network.ResponseState
 import com.myniprojects.githubviewer.repository.GithubRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -17,28 +19,51 @@ class UserReposViewModel @ViewModelInject constructor(
     var currentQuery: String? = null
         private set
 
-    var currentResult: Flow<PagingData<GithubRepo>>? = null
+    var currentRepoResult: Flow<PagingData<GithubRepo>>? = null
         private set
 
 
     @ExperimentalCoroutinesApi
-    fun searchUserRepo(query: String): Flow<PagingData<GithubRepo>>?
+    fun searchUserRepo(username: String): Flow<PagingData<GithubRepo>>?
     {
-        if (query.isBlank())
+        if (username.isBlank())
         {
             return null
         }
 
-        if (currentQuery == query)
+        if (currentQuery == username)
         {
-            return currentResult
+            return currentRepoResult
         }
 
-        currentQuery = query
+        currentQuery = username
 
-        currentResult = githubRepository.getUserReposSearchStream(query)
+        currentRepoResult = githubRepository.getUserReposSearchStream(username)
             .cachedIn(viewModelScope)
 
-        return currentResult
+        return currentRepoResult
     }
+
+    var currentUserResult: Flow<ResponseState<GithubUser>>? = null
+        private set
+
+    fun searchUser(username: String): Flow<ResponseState<GithubUser>>?
+    {
+        if (username.isBlank())
+        {
+            return null
+        }
+
+        if (currentQuery == username)
+        {
+            return currentUserResult
+        }
+
+        currentQuery = username
+
+        currentUserResult = githubRepository.getUser(username)
+
+        return currentUserResult
+    }
+
 }

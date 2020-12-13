@@ -1,16 +1,22 @@
 package com.myniprojects.githubviewer.repository
 
 import androidx.paging.PagingSource
+import com.myniprojects.githubviewer.model.GithubUser
 import com.myniprojects.githubviewer.network.GithubService
 import com.myniprojects.githubviewer.network.ResponseItem
+import com.myniprojects.githubviewer.network.ResponseState
+import com.myniprojects.githubviewer.repository.mapper.NetworkToDomainUserMapper
 import com.myniprojects.githubviewer.utils.Constants.GITHUB_STARTING_PAGE_INDEX
 import com.myniprojects.githubviewer.utils.Constants.IN_QUALIFIER
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class GithubPaging @Inject constructor(
+class GithubDataSource @Inject constructor(
     private val githubService: GithubService,
+    private val networkToDomainUserMapper: NetworkToDomainUserMapper,
 )
 {
     fun getGithubPagingSourcePublicRepos(query: String): PagingSource<Int, ResponseItem>
@@ -82,4 +88,23 @@ class GithubPaging @Inject constructor(
         }
     }
 
+    // not sure if it has to be suspend or not, I think not
+    fun getUser(username: String): Flow<ResponseState<GithubUser>> =
+            flow {
+                emit(ResponseState.Loading)
+                try
+                {
+                    val userResponse = githubService.searchUser(username)
+
+                    emit(ResponseState.Success(networkToDomainUserMapper.mapToNewModel(userResponse)))
+                }
+                catch (e: IOException)
+                {
+                    emit(ResponseState.Error(e))
+                }
+                catch (e: HttpException)
+                {
+                    emit(ResponseState.Error(e))
+                }
+            }
 }

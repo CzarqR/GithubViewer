@@ -1,24 +1,33 @@
 package com.myniprojects.githubviewer.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.ui.tooling.preview.Preview
 import com.myniprojects.githubviewer.R
-import com.myniprojects.githubviewer.ui.composes.EmptyItem
-import com.myniprojects.githubviewer.ui.composes.RepoList
+import com.myniprojects.githubviewer.model.GithubUser
+import com.myniprojects.githubviewer.network.ResponseState
+import com.myniprojects.githubviewer.ui.composes.*
+import com.myniprojects.githubviewer.ui.theme.ThemedPreview
 import com.myniprojects.githubviewer.vm.UserReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -31,25 +40,17 @@ fun UserReposScreen(
     modifier: Modifier = Modifier
 )
 {
-
     val (query, setQuery) = remember { mutableStateOf(viewModel.currentQuery ?: "") }
     val (repos, setRepos) = remember {
         mutableStateOf(
-            viewModel.currentRepoResult ?: viewModel.searchUserRepo(username = "")
+            viewModel.currentRepoResult
         )
     }
 
     val (user, setUser) = remember {
         mutableStateOf(
-            viewModel.currentUserResult ?: viewModel.searchUser("CzarqR")
+            viewModel.currentUserResult ?: viewModel.searchUser("pwnall")
         )
-    }
-
-    val x = user?.collectAsState(initial = null)
-
-    if (x?.value != null)
-    {
-        Timber.d(x.value.toString())
     }
 
 
@@ -57,6 +58,13 @@ fun UserReposScreen(
 
     val emptyQueryMessage = stringResource(id = R.string.empty_query)
     val ok = stringResource(id = R.string.ok)
+
+
+    fun initSearch(username: String)
+    {
+        setUser(viewModel.searchUser(username = username))
+        //setRepos(viewModel.searchUserRepo(username = username))
+    }
 
     Column(
         modifier = modifier
@@ -87,7 +95,8 @@ fun UserReposScreen(
 
                         if (query.isNotBlank())
                         {
-                            setRepos(viewModel.searchUserRepo(username = query))
+                            Timber.d("Not blank: $query")
+                            initSearch(username = query)
                             softwareKeyboardController?.hideSoftwareKeyboard()
                         }
                         else
@@ -113,18 +122,225 @@ fun UserReposScreen(
                 }
             )
         }
-        if (repos == null)
+        if (repos == null && user == null)
         {
             EmptySearchScreen(stringResource(id = R.string.search_info_user))
         }
         else
         {
-            RepoList(
-                repos = repos,
-                error404 = {
-                    EmptyItem(message = stringResource(id = R.string.user_not_found))
+            Column {
+
+                if (user != null)
+                {
+                    UserState(userFlow = user)
                 }
-            )
+
+                if (repos != null)
+                {
+                    RepoList(
+                        repos = repos,
+                        error404 = {
+                            EmptyItem(message = stringResource(id = R.string.user_not_found))
+                        }
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+fun UserState(
+    userFlow: Flow<ResponseState<GithubUser>>,
+)
+{
+    val user = userFlow.collectAsState(initial = ResponseState.Sleep)
+
+    Timber.d(user.value.toString())
+
+    when (val x = user.value)
+    {
+        is ResponseState.Success ->
+        {
+            User(user = x.data)
+        }
+        is ResponseState.Error ->
+        {
+            ErrorItem(
+                message = x.exception.localizedMessage
+                        ?: stringResource(id = R.string.cannot_load_data),
+                onClickRetry = {})
+        }
+        ResponseState.Loading ->
+        {
+            LoadingItem()
+        }
+        ResponseState.Sleep ->
+        {
+            // collapsed
+        }
+    }
+}
+
+@Composable
+fun User(
+    user: GithubUser,
+    modifier: Modifier = Modifier
+)
+{
+
+    Surface(
+        modifier = modifier.padding(
+            top = dimensionResource(id = R.dimen.default_small_padding),
+            bottom = dimensionResource(id = R.dimen.default_small_padding)
+        ),
+        color = MaterialTheme.colors.surface,
+        elevation = dimensionResource(id = R.dimen.card_elevation) / 2
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.default_small_padding))
+        ) {
+            Image(
+                modifier = Modifier
+                    .preferredSize(dimensionResource(id = R.dimen.avatar_size))
+                    .clip(RoundedCornerShape(50)),
+                asset = imageResource(id = R.drawable.test_avatar)
+            )
+
+            ScrollableColumn(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.avatar_size))
+                    .weight(1f)
+                    .padding(start = dimensionResource(id = R.dimen.default_medium_padding)),
+            ) {
+
+                with(user) {
+
+                    Text(
+                        text = name ?: login,
+                        style = MaterialTheme.typography.h6,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+
+                    bio?.let {
+                        StyledTextUserBody(text = it)
+                    }
+
+                    StyledTextUserBody(
+                        text = stringResource(
+                            id = R.string.joined_format,
+                            createdAt.substring(0..9)
+                        )
+                    )
+
+                    company?.let {
+                        if (it.isNotBlank())
+                        {
+                            StyledTextUserBody(
+                                text = stringResource(id = R.string.company_format, it)
+                            )
+                        }
+                    }
+
+                    location?.let {
+                        if (it.isNotBlank())
+                        {
+                            StyledTextUserBody(
+                                text = stringResource(id = R.string.location_format, it)
+                            )
+                        }
+                    }
+                    email?.let {
+                        if (it.isNotBlank())
+                        {
+                            StyledTextUserBody(
+                                text = stringResource(id = R.string.email_format, it)
+                            )
+                        }
+                    }
+                    blog?.let {
+                        if (it.isNotBlank())
+                        {
+                            StyledTextUserBody(
+                                text = stringResource(id = R.string.blog_format, it)
+                            )
+                        }
+                    }
+
+                    twitter?.let {
+                        if (it.isNotBlank())
+                        {
+                            StyledTextUserBody(
+                                text = stringResource(id = R.string.twitter_format, it)
+                            )
+                        }
+                    }
+
+                    StyledTextUserBody(
+                        text = stringResource(
+                            id = R.string.followers_format,
+                            followers
+                        )
+                    )
+
+                    StyledTextUserBody(
+                        text = stringResource(
+                            id = R.string.following_format,
+                            following
+                        )
+                    )
+
+                    StyledTextUserBody(
+                        text = stringResource(
+                            id = R.string.public_repos_format,
+                            publicRepos
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StyledTextUserBody(text: String)
+{
+    Text(
+        text = text,
+        style = MaterialTheme.typography.body2,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .padding(top = dimensionResource(id = R.dimen.default_tiny_padding))
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun UserPrev()
+{
+    ThemedPreview {
+        User(
+            GithubUser(
+                login = "florina-muntenescu",
+                avatarUrl = "https://avatars1.githubusercontent.com/u/2998890?v=4",
+                url = "https://api.github.com/users/florina-muntenescu",
+                name = "Florina Muntenescu",
+                company = "Google",
+                blog = "https://medium.com/@florina.muntenescu",
+                location = "London, United Kingdom",
+                email = "FMuntenescu@gmail.com",
+                bio = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ",
+                twitter = "FMuntenescu",
+                publicRepos = 15,
+                followers = 3289,
+                following = 0,
+                createdAt = "2012-12-09T01:27:35Z",
+            )
+        )
     }
 }

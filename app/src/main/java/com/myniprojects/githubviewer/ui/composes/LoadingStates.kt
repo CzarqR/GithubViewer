@@ -2,15 +2,13 @@ package com.myniprojects.githubviewer.ui.composes
 
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
@@ -144,32 +142,37 @@ fun EmptyItemPrev()
 }
 
 
-//@Composable
-//fun UserNotFound(
-//    modifier: Modifier = Modifier,
-//
-//)
-//{
-//    Row(
-//        modifier = modifier.padding(16.dp),
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        Text(
-//            text = message,
-//            modifier = Modifier.weight(1f),
-//            style = MaterialTheme.typography.h6,
-//            textAlign = TextAlign.Center,
-//        )
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun UserNotFoundPrev()
-//{
-//    ThemedPreview {
-//        Column {
-//            UserNotFound()
-//        }
-//    }
-//}
+@Composable
+fun EmptySearchScreen(
+    text: String,
+    modifier: Modifier = Modifier
+)
+{
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.default_small_padding))
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.h5,
+            textAlign = TextAlign.Center
+        )
+        Icon(
+            asset = vectorResource(id = R.drawable.ic_git),
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.default_big_padding))
+        )
+    }
+}
+
+@Preview
+@Composable
+fun EmptySearchScreenPrev()
+{
+    ThemedPreview {
+        EmptySearchScreen(stringResource(id = R.string.search_info_repos))
+    }
+}

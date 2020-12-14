@@ -5,5 +5,7 @@
     <dimen name="default_tiny_padding">4dp</dimen>
     <dimen name="medium_cut">8dp</dimen>
     <dimen name="default_card_separator">5dp</dimen>
-    <dimen name="default_medium_padding">24dp</dimen>
+    <dimen name="default_medium_padding">16dp</dimen>
+    <dimen name="avatar_size">100dp</dimen>
+    <dimen name="default_big_padding">24dp</dimen>
 </resources>

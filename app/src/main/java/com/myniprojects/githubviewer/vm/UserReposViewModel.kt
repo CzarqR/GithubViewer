@@ -11,6 +11,9 @@ import com.myniprojects.githubviewer.network.ResponseState
 import com.myniprojects.githubviewer.repository.GithubRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.shareIn
+import timber.log.Timber
 
 class UserReposViewModel @ViewModelInject constructor(
     private val githubRepository: GithubRepository
@@ -26,6 +29,8 @@ class UserReposViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun searchUserRepo(username: String): Flow<PagingData<GithubRepo>>?
     {
+        Timber.d("searchUserRepo")
+
         if (username.isBlank())
         {
             return null
@@ -49,6 +54,8 @@ class UserReposViewModel @ViewModelInject constructor(
 
     fun searchUser(username: String): Flow<ResponseState<GithubUser>>?
     {
+        Timber.d("searchUser")
+
         if (username.isBlank())
         {
             return null
@@ -62,6 +69,7 @@ class UserReposViewModel @ViewModelInject constructor(
         currentQuery = username
 
         currentUserResult = githubRepository.getUser(username)
+            .shareIn(viewModelScope, SharingStarted.Lazily, 1)
 
         return currentUserResult
     }

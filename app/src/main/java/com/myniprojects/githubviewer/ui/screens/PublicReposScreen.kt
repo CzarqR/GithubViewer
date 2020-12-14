@@ -1,26 +1,25 @@
 package com.myniprojects.githubviewer.ui.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import com.myniprojects.githubviewer.R
+import com.myniprojects.githubviewer.ui.composes.EmptySearchScreen
 import com.myniprojects.githubviewer.ui.composes.RepoListSeparated
-import com.myniprojects.githubviewer.ui.theme.ThemedPreview
 import com.myniprojects.githubviewer.vm.PublicReposViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -39,7 +38,7 @@ fun PublicReposScreen(
     val (query, setQuery) = remember { mutableStateOf(viewModel.currentQuery ?: "") }
     val (repos, setRepos) = remember {
         mutableStateOf(
-            viewModel.currentResult ?: viewModel.searchPublicRepo(query = "")
+            viewModel.currentResult
         )
     }
 
@@ -113,41 +112,5 @@ fun PublicReposScreen(
                 repos = repos,
             )
         }
-    }
-}
-
-
-@Composable
-fun EmptySearchScreen(
-    text: String,
-    modifier: Modifier = Modifier
-)
-{
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.default_small_padding))
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.h5,
-            textAlign = TextAlign.Center
-        )
-        Icon(
-            asset = vectorResource(id = R.drawable.ic_git),
-            modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.default_medium_padding))
-        )
-    }
-}
-
-@Preview
-@Composable
-fun EmptySearchScreenPrev()
-{
-    ThemedPreview {
-        EmptySearchScreen(stringResource(id = R.string.search_info_repos))
     }
 }

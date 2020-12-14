@@ -15,4 +15,14 @@
     <string name="search_user_label">GitHub username</string>
     <string name="user_np_repos">User doesn\'t have any public repository</string>
     <string name="user_not_found">User with given name wasn\'t found. Try another name</string>
+    <string name="cannot_load_data">Cannot load data from server</string>
+    <string name="joined_format">Joined: %s</string>
+    <string name="company_format">Company: %s</string>
+    <string name="location_format">Location: %s</string>
+    <string name="email_format">Email: %s</string>
+    <string name="blog_format">Blog: %s</string>
+    <string name="twitter_format">Twitter: @%s</string>
+    <string name="followers_format">Followers: %d</string>
+    <string name="following_format">Following %d</string>
+    <string name="public_repos_format">Public repos: %d</string>
 </resources>

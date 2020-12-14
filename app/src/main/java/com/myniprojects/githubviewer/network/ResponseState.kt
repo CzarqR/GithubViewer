@@ -1,8 +1,5 @@
 package com.myniprojects.githubviewer.network
 
-import retrofit2.HttpException
-import java.lang.Exception
-
 sealed class ResponseState<out R>
 {
     data class Success<out T>(val data: T) : ResponseState<T>()
@@ -10,4 +7,6 @@ sealed class ResponseState<out R>
     data class Error(val exception: Exception) : ResponseState<Nothing>()
 
     object Loading : ResponseState<Nothing>()
+
+    object Sleep : ResponseState<Nothing>()
 }

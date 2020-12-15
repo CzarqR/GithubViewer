@@ -59,11 +59,6 @@ fun UserReposScreen(
     val ok = stringResource(id = R.string.ok)
 
 
-    fun initSearch(username: String)
-    {
-        setUser(viewModel.searchUser(username = username))
-    }
-
     Column(
         modifier = modifier
     ) {
@@ -94,7 +89,7 @@ fun UserReposScreen(
                         if (query.isNotBlank())
                         {
                             Timber.d("Not blank: $query")
-                            initSearch(username = query)
+                            setUser(viewModel.searchUser(username = query))
                             softwareKeyboardController?.hideSoftwareKeyboard()
                         }
                         else
@@ -134,7 +129,16 @@ fun UserReposScreen(
                         userFlow = user,
                         success = {
                             setRepos(viewModel.searchUserRepo(username = it))
-                        })
+                            viewModel.successUser = true
+                        },
+                        error = {
+                            setRepos(null)
+                            viewModel.successUser = false
+                        },
+                        retry = {
+                            setUser(viewModel.searchUser(username = query))
+                        }
+                    )
                 }
 
                 if (repos != null)
@@ -154,7 +158,9 @@ fun UserReposScreen(
 @Composable
 fun UserState(
     userFlow: Flow<ResponseState<GithubUser>>,
-    success: (String) -> Unit
+    success: (String) -> Unit,
+    error: () -> Unit,
+    retry: () -> Unit
 )
 {
     val user = userFlow.collectAsState(initial = ResponseState.Sleep)
@@ -170,10 +176,21 @@ fun UserState(
         }
         is ResponseState.Error ->
         {
-            ErrorItem(
-                message = x.exception.localizedMessage
-                        ?: stringResource(id = R.string.cannot_load_data),
-                onClickRetry = {})
+
+            if ((x.exception as retrofit2.HttpException).code() == 404)
+            {
+                EmptyItem(message = stringResource(id = R.string.user_not_found))
+            }
+            else
+            {
+                ErrorItem(
+                    message = x.exception.localizedMessage
+                            ?: stringResource(id = R.string.cannot_load_data),
+                    onClickRetry = retry,
+
+                    )
+            }
+            error()
         }
         ResponseState.Loading ->
         {

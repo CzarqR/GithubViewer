@@ -13,6 +13,7 @@ import com.myniprojects.githubviewer.repository.GithubRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 
 class PublicReposViewModel @ViewModelInject constructor(
@@ -78,6 +79,14 @@ class PublicReposViewModel @ViewModelInject constructor(
             .cachedIn(viewModelScope)
 
         return currentResult
+    }
+
+    fun saveRepo(githubRepo: GithubRepo) = viewModelScope.launch {
+        githubRepository.insertRepo(githubRepo)
+    }
+
+    fun deleteRepo(githubRepo: GithubRepo) = viewModelScope.launch {
+        githubRepository.deleteRepo(githubRepo)
     }
 }
 

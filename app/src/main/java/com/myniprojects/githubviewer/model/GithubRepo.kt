@@ -1,7 +1,11 @@
 package com.myniprojects.githubviewer.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "github_repos")
 data class GithubRepo(
-    val id: Long,
+    @PrimaryKey val id: Long,
     val name: String,
     val fullName: String,
     val description: String?,

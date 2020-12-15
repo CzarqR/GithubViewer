@@ -1,8 +1,8 @@
 package com.myniprojects.githubviewer.db
 
-import androidx.paging.PagingSource
 import androidx.room.*
 import com.myniprojects.githubviewer.model.GithubRepo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GithubRepoDao
@@ -13,8 +13,8 @@ interface GithubRepoDao
     @Delete
     suspend fun deleteRepo(githubRepo: GithubRepo)
 
-//    @Query("SELECT * FROM github_repos ORDER BY stars DESC")
-//    fun getReposPaged(): PagingSource<Int, GithubRepo>
+    @Query("SELECT * FROM github_repos ORDER BY stars DESC")
+    fun getRepos(): Flow<List<GithubRepo>>
 
 
 }

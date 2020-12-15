@@ -11,7 +11,7 @@ class LikedReposViewModel @ViewModelInject constructor(
     private val githubRepository: GithubRepository
 ) : ViewModel()
 {
-//    val savedRepos = githubRepository.getSavedRepos()
+    val savedRepos = githubRepository.savedRepos
 
     fun saveRepo(githubRepo: GithubRepo) = viewModelScope.launch {
         githubRepository.insertRepo(githubRepo)

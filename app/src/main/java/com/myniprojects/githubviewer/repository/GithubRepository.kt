@@ -64,17 +64,7 @@ class GithubRepository @Inject constructor(
 
     // region local
 
-//    fun getSavedRepos(): Flow<PagingData<GithubRepo>>
-//    {
-//        return Pager(
-//            config = PagingConfig(
-//                pageSize = NETWORK_PAGE_SIZE,
-//                enablePlaceholders = false,
-//                initialLoadSize = NETWORK_PAGE_SIZE
-//            ),
-//            pagingSourceFactory = { githubRepoDao.getReposPaged() }
-//        ).flow
-//    }
+    val savedRepos: Flow<List<GithubRepo>> = githubRepoDao.getRepos()
 
     suspend fun insertRepo(githubRepo: GithubRepo) =
             withContext(Dispatchers.IO) {

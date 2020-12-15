@@ -35,11 +35,14 @@ fun MainHost(
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
 
-    val screens = listOf(
-        BottomNavigationScreens.Repos,
-        BottomNavigationScreens.Users,
-        BottomNavigationScreens.Liked,
-    )
+    val screens = remember {
+        listOf(
+            BottomNavigationScreens.Repos,
+            BottomNavigationScreens.Users,
+            BottomNavigationScreens.Liked,
+        )
+    }
+
 
     Scaffold(
         modifier = modifier,

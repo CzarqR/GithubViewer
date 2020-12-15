@@ -1,6 +1,5 @@
 package com.myniprojects.githubviewer.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -11,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SoftwareKeyboardController
@@ -26,6 +24,7 @@ import com.myniprojects.githubviewer.network.ResponseState
 import com.myniprojects.githubviewer.ui.composes.*
 import com.myniprojects.githubviewer.ui.theme.ThemedPreview
 import com.myniprojects.githubviewer.vm.UserReposViewModel
+import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -49,7 +48,7 @@ fun UserReposScreen(
 
     val (user, setUser) = remember {
         mutableStateOf(
-            viewModel.currentUserResult ?: viewModel.searchUser("pwnall")
+            viewModel.currentUserResult
         )
     }
 
@@ -63,7 +62,6 @@ fun UserReposScreen(
     fun initSearch(username: String)
     {
         setUser(viewModel.searchUser(username = username))
-        //setRepos(viewModel.searchUserRepo(username = username))
     }
 
     Column(
@@ -132,7 +130,11 @@ fun UserReposScreen(
 
                 if (user != null)
                 {
-                    UserState(userFlow = user)
+                    UserState(
+                        userFlow = user,
+                        success = {
+                            setRepos(viewModel.searchUserRepo(username = it))
+                        })
                 }
 
                 if (repos != null)
@@ -152,6 +154,7 @@ fun UserReposScreen(
 @Composable
 fun UserState(
     userFlow: Flow<ResponseState<GithubUser>>,
+    success: (String) -> Unit
 )
 {
     val user = userFlow.collectAsState(initial = ResponseState.Sleep)
@@ -163,6 +166,7 @@ fun UserState(
         is ResponseState.Success ->
         {
             User(user = x.data)
+            success(x.data.login)
         }
         is ResponseState.Error ->
         {
@@ -191,8 +195,7 @@ fun User(
 
     Surface(
         modifier = modifier.padding(
-            top = dimensionResource(id = R.dimen.default_small_padding),
-            bottom = dimensionResource(id = R.dimen.default_small_padding)
+            top = dimensionResource(id = R.dimen.default_small_padding)
         ),
         color = MaterialTheme.colors.surface,
         elevation = dimensionResource(id = R.dimen.card_elevation) / 2
@@ -201,11 +204,14 @@ fun User(
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.default_small_padding))
         ) {
-            Image(
+
+            GlideImage(
+                imageModel = user.avatarUrl,
                 modifier = Modifier
                     .preferredSize(dimensionResource(id = R.dimen.avatar_size))
                     .clip(RoundedCornerShape(50)),
-                asset = imageResource(id = R.drawable.test_avatar)
+                circularRevealedEnabled = true,
+                circularRevealedDuration = 1000,
             )
 
             ScrollableColumn(

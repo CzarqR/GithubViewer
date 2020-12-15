@@ -91,8 +91,18 @@ dependencies {
     implementation "androidx.activity:activity-ktx:$activity_ktx_version"
 
     // paging https://developer.android.com/jetpack/androidx/releases/paging#paging_compose_version_100_2
-    implementation "androidx.paging:paging-compose:1.0.0-alpha02"
+    implementation "androidx.paging:paging-compose:$paging_compose_version"
 
     // navigation https://developer.android.com/jetpack/compose/navigation
     implementation "androidx.navigation:navigation-compose:$nav_compose_version"
+
+    // Landscapist-Glide https://github.com/skydoves/Landscapist
+    implementation "com.github.skydoves:landscapist-glide:$glide_version"
+
+    // Room https://developer.android.com/training/data-storage/room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // Kotlin Extensions and Coroutines support for Room  https://developer.android.com/kotlin/ktx#room
+    implementation "androidx.room:room-ktx:$room_version"
 }

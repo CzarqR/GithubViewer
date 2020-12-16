@@ -26,5 +26,4 @@ class NetworkToDomainUserMapper @Inject constructor() : ModelMapper<UserResponse
             createdAt = entity.createdAt,
         )
     }
-
 }

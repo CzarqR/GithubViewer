@@ -5,7 +5,7 @@ import com.squareup.moshi.Json
 data class UserResponse(
     val login: String,
     @Json(name = "avatar_url") val avatarUrl: String,
-    val url: String,
+    @Json(name = "html_url") val url: String,
     val name: String?,
     val company: String?,
     val blog: String?,

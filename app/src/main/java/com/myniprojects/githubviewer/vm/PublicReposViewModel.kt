@@ -84,10 +84,6 @@ class PublicReposViewModel @ViewModelInject constructor(
     fun saveRepo(githubRepo: GithubRepo) = viewModelScope.launch {
         githubRepository.insertRepo(githubRepo)
     }
-
-    fun deleteRepo(githubRepo: GithubRepo) = viewModelScope.launch {
-        githubRepository.deleteRepo(githubRepo)
-    }
 }
 
 private fun checkInsert(before: GithubRepo, after: GithubRepo): Boolean

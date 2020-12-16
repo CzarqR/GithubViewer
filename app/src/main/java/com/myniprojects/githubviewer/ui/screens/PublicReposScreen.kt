@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -46,6 +47,8 @@ fun PublicReposScreen(
 
     val emptyQueryMessage = stringResource(id = R.string.empty_query)
     val ok = stringResource(id = R.string.ok)
+
+    val context = ContextAmbient.current
 
     Column(
         modifier = modifier
@@ -110,6 +113,19 @@ fun PublicReposScreen(
         {
             RepoListSeparated(
                 repos = repos,
+                onDoubleCLick = {
+                    viewModel.saveRepo(it)
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = context.getString(
+                                R.string.saved_repo_format,
+                                it.fullName
+                            ),
+                            actionLabel = context.getString(R.string.ok),
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
             )
         }
     }

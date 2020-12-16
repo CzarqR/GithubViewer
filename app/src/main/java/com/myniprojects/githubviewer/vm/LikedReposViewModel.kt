@@ -13,10 +13,6 @@ class LikedReposViewModel @ViewModelInject constructor(
 {
     val savedRepos = githubRepository.savedRepos
 
-    fun saveRepo(githubRepo: GithubRepo) = viewModelScope.launch {
-        githubRepository.insertRepo(githubRepo)
-    }
-
     fun deleteRepo(githubRepo: GithubRepo) = viewModelScope.launch {
         githubRepository.deleteRepo(githubRepo)
     }

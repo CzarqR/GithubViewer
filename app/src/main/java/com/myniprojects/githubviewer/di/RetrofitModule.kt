@@ -44,7 +44,6 @@ object RetrofitModule
         level = HttpLoggingInterceptor.Level.BASIC
     }
 
-
     @Singleton
     @Provides
     fun provideGithubService(retrofit: Retrofit): GithubService =

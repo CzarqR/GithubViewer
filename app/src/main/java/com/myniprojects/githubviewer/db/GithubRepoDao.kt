@@ -16,5 +16,4 @@ interface GithubRepoDao
     @Query("SELECT * FROM github_repos ORDER BY stars DESC")
     fun getRepos(): Flow<List<GithubRepo>>
 
-
 }

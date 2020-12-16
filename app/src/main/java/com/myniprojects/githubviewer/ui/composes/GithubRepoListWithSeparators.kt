@@ -36,6 +36,7 @@ import timber.log.Timber
 @Composable
 fun RepoListSeparated(
     repos: Flow<PagingData<RepoListModel>>,
+    onDoubleCLick: (GithubRepo) -> Unit,
     modifier: Modifier = Modifier
 )
 {
@@ -68,7 +69,8 @@ fun RepoListSeparated(
                                 {
                                     Timber.d("Cannot open web")
                                 }
-                            }
+                            },
+                            onDoubleCLick = onDoubleCLick
                         )
                     }
                     is RepoListModel.RepoSeparatorItem ->
@@ -90,8 +92,9 @@ fun RepoListSeparated(
 @Composable
 fun GithubRepoItem(
     repo: GithubRepo,
-    modifier: Modifier = Modifier,
-    onCLick: (String) -> Unit
+    onCLick: (String) -> Unit,
+    onDoubleCLick: (GithubRepo) -> Unit,
+    modifier: Modifier = Modifier
 )
 {
     Card(
@@ -103,9 +106,12 @@ fun GithubRepoItem(
                 top = dimensionResource(id = R.dimen.default_card_separator),
                 bottom = dimensionResource(id = R.dimen.default_card_separator)
             )
-            .clickable(onClick = {
-                onCLick(repo.url)
-            }),
+            .clickable(
+                onClick = {
+                    onCLick(repo.url)
+                }, onDoubleClick = {
+                    onDoubleCLick(repo)
+                }),
         elevation = dimensionResource(id = R.dimen.card_elevation)
     ) {
         Column(
@@ -186,9 +192,8 @@ fun GithubRepoItemPrev()
                 forks = 1391,
                 language = "Kotlin"
             ),
-            onCLick = {
-
-            }
+            onCLick = {},
+            onDoubleCLick = {}
         )
     }
 }

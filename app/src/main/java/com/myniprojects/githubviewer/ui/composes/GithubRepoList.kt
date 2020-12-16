@@ -25,6 +25,7 @@ import timber.log.Timber
 @Composable
 fun RepoList(
     repos: Flow<PagingData<GithubRepo>>,
+    onDoubleCLick: (GithubRepo) -> Unit,
     modifier: Modifier = Modifier,
     error404: (@Composable () -> Unit)? = null
 )
@@ -54,7 +55,8 @@ fun RepoList(
                         {
                             Timber.d("Cannot open web")
                         }
-                    }
+                    },
+                    onDoubleCLick = onDoubleCLick
                 )
             }
         }

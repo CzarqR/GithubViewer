@@ -25,4 +25,10 @@
     <string name="followers_format">Followers: %d</string>
     <string name="following_format">Following %d</string>
     <string name="public_repos_format">Public repos: %d</string>
+    <string name="liked_repos">Liked repositories</string>
+    <string name="no_saved_repos">Currently You don\'t have any saved repositories. To save it do double click on any repository item You want to save</string>
+    <string name="info">In this app, You can find a public GitHub repository or user. If You want You can save the repository by double-clicking on it. To delete repository make double-click again in `Liked screen`</string>
+    <string name="deleted_repo_format">Repository deleted: %s</string>
+    <string name="saved_repo_format">Repository saved: %s</string>
+    <string name="twitter_http_format">https://twitter.com/%s</string>
 </resources>

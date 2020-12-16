@@ -1,6 +1,10 @@
 package com.myniprojects.githubviewer.ui.screens
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -23,6 +28,7 @@ import com.myniprojects.githubviewer.model.GithubUser
 import com.myniprojects.githubviewer.network.ResponseState
 import com.myniprojects.githubviewer.ui.composes.*
 import com.myniprojects.githubviewer.ui.theme.ThemedPreview
+import com.myniprojects.githubviewer.ui.theme.matteBlue
 import com.myniprojects.githubviewer.vm.UserReposViewModel
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,11 +58,9 @@ fun UserReposScreen(
         )
     }
 
+    val context = ContextAmbient.current
 
     val coroutineScope = rememberCoroutineScope()
-
-    val emptyQueryMessage = stringResource(id = R.string.empty_query)
-    val ok = stringResource(id = R.string.ok)
 
 
     Column(
@@ -102,8 +106,8 @@ fun UserReposScreen(
 
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
-                                    message = emptyQueryMessage,
-                                    actionLabel = ok,
+                                    message = context.getString(R.string.empty_query),
+                                    actionLabel = context.getString(R.string.ok),
                                     duration = SnackbarDuration.Long
                                 )
                             }
@@ -147,6 +151,19 @@ fun UserReposScreen(
                         repos = repos,
                         error404 = {
                             EmptyItem(message = stringResource(id = R.string.user_not_found))
+                        },
+                        onDoubleCLick = {
+                            viewModel.saveRepo(it)
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(
+                                        R.string.saved_repo_format,
+                                        it.fullName
+                                    ),
+                                    actionLabel = context.getString(R.string.ok),
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
                         }
                     )
                 }
@@ -177,7 +194,7 @@ fun UserState(
         is ResponseState.Error ->
         {
 
-            if ((x.exception as retrofit2.HttpException).code() == 404)
+            if ((x.exception as? retrofit2.HttpException)?.code() == 404)
             {
                 EmptyItem(message = stringResource(id = R.string.user_not_found))
             }
@@ -210,6 +227,8 @@ fun User(
 )
 {
 
+    val context = ContextAmbient.current
+
     Surface(
         modifier = modifier.padding(
             top = dimensionResource(id = R.dimen.default_small_padding)
@@ -226,7 +245,18 @@ fun User(
                 imageModel = user.avatarUrl,
                 modifier = Modifier
                     .preferredSize(dimensionResource(id = R.dimen.avatar_size))
-                    .clip(RoundedCornerShape(50)),
+                    .clip(RoundedCornerShape(50))
+                    .clickable(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(user.url))
+                        try
+                        {
+                            context.startActivity(intent)
+                        }
+                        catch (e: ActivityNotFoundException)
+                        {
+                            Timber.d("Cannot open web")
+                        }
+                    }),
                 circularRevealedEnabled = true,
                 circularRevealedDuration = 1000,
             )
@@ -287,8 +317,27 @@ fun User(
                     blog?.let {
                         if (it.isNotBlank())
                         {
-                            StyledTextUserBody(
-                                text = stringResource(id = R.string.blog_format, it)
+                            Text(
+                                color = matteBlue,
+                                text = stringResource(id = R.string.blog_format, it),
+                                style = MaterialTheme.typography.body2,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.default_tiny_padding))
+                                    .clickable(
+                                        onClick = {
+                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                                            try
+                                            {
+                                                context.startActivity(intent)
+                                            }
+                                            catch (e: ActivityNotFoundException)
+                                            {
+                                                Timber.d("Cannot open web")
+                                            }
+                                        }
+                                    )
                             )
                         }
                     }
@@ -296,8 +345,35 @@ fun User(
                     twitter?.let {
                         if (it.isNotBlank())
                         {
-                            StyledTextUserBody(
-                                text = stringResource(id = R.string.twitter_format, it)
+                            Text(
+                                color = matteBlue,
+                                text = stringResource(id = R.string.twitter_format, it),
+                                style = MaterialTheme.typography.body2,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.default_tiny_padding))
+                                    .clickable(
+                                        onClick = {
+                                            val intent = Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(
+                                                    context.getString(
+                                                        R.string.twitter_http_format,
+                                                        it
+                                                    )
+                                                )
+                                            )
+                                            try
+                                            {
+                                                context.startActivity(intent)
+                                            }
+                                            catch (e: ActivityNotFoundException)
+                                            {
+                                                Timber.d("Cannot open web")
+                                            }
+                                        }
+                                    )
                             )
                         }
                     }

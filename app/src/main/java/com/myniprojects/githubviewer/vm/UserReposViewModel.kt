@@ -85,9 +85,4 @@ class UserReposViewModel @ViewModelInject constructor(
     fun saveRepo(githubRepo: GithubRepo) = viewModelScope.launch {
         githubRepository.insertRepo(githubRepo)
     }
-
-    fun deleteRepo(githubRepo: GithubRepo) = viewModelScope.launch {
-        githubRepository.deleteRepo(githubRepo)
-    }
-
 }

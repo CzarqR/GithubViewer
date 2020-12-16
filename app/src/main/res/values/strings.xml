@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GithubViewer</string>
+    <string name="app_name">GitHub Viewer</string>
     <string name="try_again">Try again</string>
     <string name="div_format">%s+</string>
     <string name="search_repo_label">GitHub Repository</string>

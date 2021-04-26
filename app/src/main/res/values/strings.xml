@@ -31,4 +31,7 @@
     <string name="deleted_repo_format">Repository deleted: %s</string>
     <string name="saved_repo_format">Repository saved: %s</string>
     <string name="twitter_http_format">https://twitter.com/%s</string>
+    <string name="user_saved">User saved</string>
+    <string name="no_saved_user">Currently You don\'t have any saved users. To save it do double click on any user\'s avatar You want to save</string>
+    <string name="deleted_user_format">User deleted: %s</string>
 </resources>

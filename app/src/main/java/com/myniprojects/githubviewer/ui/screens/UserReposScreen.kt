@@ -141,6 +141,16 @@ fun UserReposScreen(
                         },
                         retry = {
                             setUser(viewModel.searchUser(username = query))
+                        },
+                        doubleClickAvatar = {
+                            viewModel.saveUser(it)
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.user_saved),
+                                    actionLabel = context.getString(R.string.ok),
+                                    duration = SnackbarDuration.Long
+                                )
+                            }
                         }
                     )
                 }
@@ -177,7 +187,8 @@ fun UserState(
     userFlow: Flow<ResponseState<GithubUser>>,
     success: (String) -> Unit,
     error: () -> Unit,
-    retry: () -> Unit
+    retry: () -> Unit,
+    doubleClickAvatar: (GithubUser) -> Unit
 )
 {
     val user = userFlow.collectAsState(initial = ResponseState.Sleep)
@@ -188,7 +199,10 @@ fun UserState(
     {
         is ResponseState.Success ->
         {
-            User(user = x.data)
+            User(
+                user = x.data,
+                doubleClickAvatar = doubleClickAvatar
+            )
             success(x.data.login)
         }
         is ResponseState.Error ->
@@ -223,7 +237,8 @@ fun UserState(
 @Composable
 fun User(
     user: GithubUser,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    doubleClickAvatar: (GithubUser) -> Unit,
 )
 {
 
@@ -246,17 +261,22 @@ fun User(
                 modifier = Modifier
                     .preferredSize(dimensionResource(id = R.dimen.avatar_size))
                     .clip(RoundedCornerShape(50))
-                    .clickable(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(user.url))
-                        try
-                        {
-                            context.startActivity(intent)
+                    .clickable(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(user.url))
+                            try
+                            {
+                                context.startActivity(intent)
+                            }
+                            catch (e: ActivityNotFoundException)
+                            {
+                                Timber.d("Cannot open web")
+                            }
+                        },
+                        onDoubleClick = {
+                            doubleClickAvatar(user)
                         }
-                        catch (e: ActivityNotFoundException)
-                        {
-                            Timber.d("Cannot open web")
-                        }
-                    }),
+                    ),
                 circularRevealedEnabled = true,
                 circularRevealedDuration = 1000,
             )
@@ -439,7 +459,8 @@ fun UserPrev()
                 followers = 3289,
                 following = 0,
                 createdAt = "2012-12-09T01:27:35Z",
-            )
+            ),
+            doubleClickAvatar = {}
         )
     }
 }

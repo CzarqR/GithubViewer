@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.myniprojects.githubviewer.db.AppDatabase
 import com.myniprojects.githubviewer.db.GithubRepoDao
+import com.myniprojects.githubviewer.db.GithubUserDao
 import com.myniprojects.githubviewer.utils.Constants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -29,5 +30,9 @@ object DatabaseModule
 
     @Singleton
     @Provides
-    fun provideNewsDao(db: AppDatabase): GithubRepoDao = db.githubRepoDao
+    fun provideRepoDao(db: AppDatabase): GithubRepoDao = db.githubRepoDao
+
+    @Singleton
+    @Provides
+    fun provideUserDao(db: AppDatabase): GithubUserDao = db.githubUserDao
 }

@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.myniprojects.githubviewer.db.GithubRepoDao
+import com.myniprojects.githubviewer.db.GithubUserDao
 import com.myniprojects.githubviewer.model.GithubRepo
 import com.myniprojects.githubviewer.model.GithubUser
 import com.myniprojects.githubviewer.network.ResponseState
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class GithubRepository @Inject constructor(
     private val githubDataSource: GithubDataSource,
     private val mapper: NetworkToDomainReposMapper,
-    private val githubRepoDao: GithubRepoDao
+    private val githubRepoDao: GithubRepoDao,
+    private val githubUserDao: GithubUserDao
 )
 {
     // region network
@@ -74,6 +76,18 @@ class GithubRepository @Inject constructor(
     suspend fun deleteRepo(githubRepo: GithubRepo) =
             withContext(Dispatchers.IO) {
                 githubRepoDao.deleteRepo(githubRepo)
+            }
+
+    val savedUsers: Flow<List<GithubUser>> = githubUserDao.getUsers()
+
+    suspend fun insertUser(githubUser: GithubUser) =
+            withContext(Dispatchers.IO) {
+                githubUserDao.insertUser(githubUser)
+            }
+
+    suspend fun deleteUser(githubUser: GithubUser) =
+            withContext(Dispatchers.IO) {
+                githubUserDao.deleteUser(githubUser)
             }
 
     // endregion

@@ -85,4 +85,8 @@ class UserReposViewModel @ViewModelInject constructor(
     fun saveRepo(githubRepo: GithubRepo) = viewModelScope.launch {
         githubRepository.insertRepo(githubRepo)
     }
+
+    fun saveUser(githubUser: GithubUser) = viewModelScope.launch {
+        githubRepository.insertUser(githubUser)
+    }
 }

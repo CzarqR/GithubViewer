@@ -1,7 +1,11 @@
 package com.myniprojects.githubviewer.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "github_users")
 data class GithubUser(
-    val login: String,
+    @PrimaryKey val login: String,
     val avatarUrl: String,
     val url: String,
     val name: String?,

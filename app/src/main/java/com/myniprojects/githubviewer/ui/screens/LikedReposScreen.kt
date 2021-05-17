@@ -22,16 +22,13 @@ import com.myniprojects.githubviewer.R
 import com.myniprojects.githubviewer.ui.composes.EmptySearchScreen
 import com.myniprojects.githubviewer.ui.composes.GithubRepoItem
 import com.myniprojects.githubviewer.ui.composes.LoadingItem
+import com.myniprojects.githubviewer.vm.ItemType
 import com.myniprojects.githubviewer.vm.LikedReposViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-private enum class ItemType
-{
-    REPOS,
-    USERS
-}
-
+@ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
 fun LikedReposScreen(
@@ -43,7 +40,7 @@ fun LikedReposScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val (isHelpOpened, setIsDialogOpened) = remember { mutableStateOf(false) }
-    val (itemType, setItemType) = remember { mutableStateOf(ItemType.REPOS) }
+    val itemType = viewModel.selectedItemType.value
 
     val savedReposState = viewModel.savedRepos.collectAsState(initial = null)
     val savedRepos = savedReposState.value
@@ -77,13 +74,15 @@ fun LikedReposScreen(
 
         TopAppBar(
             title = {
-                Text(text = stringResource(id = R.string.liked_repos))
+                Text(
+                    text = stringResource(
+                        id = if (itemType == ItemType.REPOS) R.string.liked_repos else R.string.liked_users
+                    )
+                )
             },
             actions = {
                 IconButton(onClick = {
-                    setItemType(
-                        if (itemType == ItemType.REPOS) ItemType.USERS else ItemType.REPOS
-                    )
+                    viewModel.nextItemType()
                 }) {
                     Icon(
                         asset = if (itemType == ItemType.REPOS) Icons.Outlined.PeopleOutline else Icons.Outlined.Book,

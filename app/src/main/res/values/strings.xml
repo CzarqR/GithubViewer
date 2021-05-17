@@ -34,4 +34,5 @@
     <string name="user_saved">User saved</string>
     <string name="no_saved_user">Currently You don\'t have any saved users. To save it do double click on any user\'s avatar You want to save</string>
     <string name="deleted_user_format">User deleted: %s</string>
+    <string name="liked_users">Liked users</string>
 </resources>
